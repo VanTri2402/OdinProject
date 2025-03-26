@@ -1,0 +1,28 @@
+h1 {
+  font-weight: 900;
+  font-size: 3em;
+  font-family: bold;
+}
+.p-1 {
+  font-size: 14px;
+}
+.p-2 {
+  font-size: 20px;
+}
+.p-text {
+  font-weight: 900;
+}
+.p-child {
+  font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
+}
+
+.btn1 {
+  background-color: green;
+  color: white;
+  font-weight: 900;
+}
+.btn2 {
+  background-color: white;
+  color: black;
+  font-weight: 700;
+}
