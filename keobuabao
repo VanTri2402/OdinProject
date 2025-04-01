@@ -1,0 +1,5 @@
+1. Lay gia tri tu computer 1 trong 3 keo bua bao va random ngau nhien
+2. Lay gia tri tu input 1 trong 3 neu la keo bua bao tra luu gia tri con khong thi yeu cau nhap lai
+3. tao bien luu diem cua nguoi choi va may tinh
+4. viet logic choi game cho moi vong : khai bao bien playRound truyen 2 tham so diem cua 2 ben lam cho tham so khong phan biet chu hoa , viet console cho ng thanng va tang bien diem len 1
+5. viet logic toan bo tro choi : tao 1 ham playGame su dung playround va cac bien diem vao ham lap lai 5 lan
