@@ -1,0 +1,193 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+
+.background {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #f0f8ff;
+}
+
+.container {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 350px;
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.text-header h1 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.Score {
+  display: flex;
+  justify-content: space-between;
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.human,
+.computer {
+  text-align: center;
+}
+
+.human-score,
+.computer-score {
+  font-size: 14px;
+}
+
+.number-human-score,
+.number-computer-score {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.body {
+  margin-bottom: 20px;
+}
+
+.text-body {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.Keo-Bua-Bao {
+  display: flex;
+  justify-content: space-around;
+  gap: 10px;
+}
+
+.circle {
+  border: 2px solid #ccc;
+  border-radius: 50%;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 0;
+  background-color: #f5f5f5;
+  position: relative;
+}
+
+.circle:hover {
+  background-color: #e0e0e0;
+  cursor: pointer;
+}
+
+/* Icon Búa */
+.icon-bua {
+  position: absolute;
+  top: 15px;
+  width: 30px;
+  height: 30px;
+}
+
+.icon-bua::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 10px;
+  background-color: #666;
+  top: 0;
+  left: 5px;
+}
+
+.icon-bua::after {
+  content: "";
+  position: absolute;
+  width: 5px;
+  height: 20px;
+  background-color: #666;
+  top: 10px;
+  left: 12px;
+}
+
+/* Icon Bao */
+.icon-bao {
+  position: absolute;
+  top: 15px;
+  width: 30px;
+  height: 30px;
+  background-color: #666;
+}
+
+/* Icon Kéo */
+.icon-keo {
+  position: absolute;
+  top: 15px;
+  width: 30px;
+  height: 30px;
+}
+
+.icon-keo::before {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 5px;
+  background-color: #666;
+  top: 12px;
+  left: 0;
+}
+
+.icon-keo::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  border-left: 10px solid #666;
+  top: 10px;
+  left: 20px;
+}
+
+.text-bua,
+.text-bao,
+.text-keo {
+  margin-bottom: 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.footer {
+  margin-top: 20px;
+}
+
+.background-text-footer {
+  background-color: #f5f5f5;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.button-footer {
+  background-color: #28a745;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.button-footer:hover {
+  background-color: #218838;
+}
