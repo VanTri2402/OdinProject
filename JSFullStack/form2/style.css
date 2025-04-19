@@ -7,7 +7,7 @@
 }
 body {
   height: 100vh;
-  background-image: url("/tree.png.jpg");
+  background-image: url("/JSFullStack/image/tree.png.jpg");
   background-size: cover; /* Ảnh phủ kín */
   background-position: center; /* Căn giữa ảnh */
   background-repeat: no-repeat; /* Không lặp ảnh */
@@ -23,7 +23,7 @@ body {
   display: flex;
   justify-content: space-between;
   padding: 30px;
-
+  box-shadow: inset;
   font-weight: 600;
   width: 100%;
   backdrop-filter: blur(5px);

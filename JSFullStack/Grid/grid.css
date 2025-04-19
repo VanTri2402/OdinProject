@@ -1,0 +1,60 @@
+/* grid.css */
+
+/* Định nghĩa vùng chứa grid */
+.grid-demo {
+  display: grid; /* Kích hoạt chế độ grid layout */
+  grid-template-columns: 200px 1fr; /* 2 cột: cột 1 rộng 200px, cột 2 chiếm phần còn lại */
+  grid-template-rows: 60px 1fr 40px; /* 3 hàng: hàng 1 cao 60px, hàng 2 tự giãn, hàng 3 cao 40px */
+  gap: 10px; /* Khoảng cách giữa các ô grid là 10px */
+  height: 300px; /* Chiều cao tổng thể của grid */
+  background: #f0f0f0; /* Màu nền nhạt cho grid */
+  padding: 10px; /* Lề trong cho grid */
+}
+
+/* Định nghĩa vị trí cho từng item */
+.item1 {
+  grid-column: 1 / 3; /* Header chiếm cả 2 cột */
+  grid-row: 1; /* Ở hàng đầu tiên */
+  background: #4f8ef7;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item2 {
+  grid-column: 1; /* Sidebar ở cột 1 */
+  grid-row: 2; /* Ở hàng thứ 2 */
+  background: #50c878;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item3 {
+  grid-column: 2; /* Main Content ở cột 2 */
+  grid-row: 2; /* Ở hàng thứ 2 */
+  background: #f7b64f;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.item4 {
+  grid-column: 1 / 3; /* Footer chiếm cả 2 cột */
+  grid-row: 3; /* Ở hàng cuối cùng */
+  background: #d94f4f;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Tùy chọn: Thêm style cho các item để dễ nhìn */
+.item {
+  font-size: 1.2rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px #0001;
+}
