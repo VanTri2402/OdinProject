@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=\, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Thêm một số CSS cơ bản để dialog trông đẹp hơn */
+     
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <dialog id="dialog">
+        <form action="">
+          <button id="closeDialog" class="close">
+            <i class="bx bx-x"></i>
+          </button>
+          <h1>Nhap thong tin sach can them</h1>
+          <input
+            class="nameBook input"
+            type="text"
+            placeholder="Input name Book"
+          />
+          <input
+            class="authorBook input"
+            type="text"
+            placeholder="Input author of Book"
+          />
+          <div class="inputFooter">
+            <input
+              class="pagesBook"
+              type="text"
+              placeholder="Input pages of Book"
+            />
+            <select class="readBook" name="Read?" id="read">
+              <option value="isRead">Đã đọc</option>
+              <option value="notRead">Chưa đọc</option>
+            </select>
+          </div>
+          <button class="btnModalAdd">Add book !</button>
+        </form>
+      </dialog>
+      <button id="openDialog" class="btn-addNewBook">ADD Book</button>
+      <div class="library"></div>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
