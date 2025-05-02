@@ -1,69 +1,68 @@
-// Import CSS
 import "./styles.css";
+import { home } from "./module/home";
+import { about } from "./module/about"; // Thêm About
+import { menutab } from "./module/menu";
+import { reservations } from "./module/reservations"; // Thêm Reservations
+import { contact } from "./module/contact";
+import { header } from "./module/header";
+import { footer } from "./module/footer";
 
-// Các hàm tính toán đơn giản
-function add(a, b) {
-  return a + b;
+console.log("Restaurant Page is running!");
+
+const headerElement = document.getElementById("header");
+const content = document.getElementById("content");
+const footerElement = document.getElementById("footer");
+
+// Thêm header và footer
+try {
+  headerElement.appendChild(header());
+  footerElement.appendChild(footer());
+} catch (error) {
+  console.error("Error appending header or footer:", error);
 }
 
-function subtract(a, b) {
-  return a - b;
+function clearContent() {
+  content.innerHTML = "";
 }
 
-// Hàm khởi tạo ứng dụng
-function initApp() {
-  // Thêm nội dung vào container
-  const container = document.querySelector(".container");
-
-  // Tạo giao diện
-  const content = document.createElement("div");
-  content.innerHTML = `
-    <div>
-      <h2>Máy tính đơn giản</h2>
-      <div>
-        <input type="number" id="num1" placeholder="Số thứ nhất" value="5" />
-        <input type="number" id="num2" placeholder="Số thứ hai" value="3" />
-      </div>
-      <div>
-        <button id="addBtn" class="btn">Cộng</button>
-        <button id="subtractBtn" class="btn">Trừ</button>
-      </div>
-      <div class="result" id="result">
-        Kết quả sẽ hiển thị ở đây
-      </div>
-    </div>
-  `;
-
-  container.appendChild(content);
-
-  // Thêm sự kiện cho các nút
-  document.getElementById("addBtn").addEventListener("click", handleAdd);
-  document
-    .getElementById("subtractBtn")
-    .addEventListener("click", handleSubtract);
+function displayTab(tabFunction) {
+  clearContent();
+  const tabContent = tabFunction();
+  console.log("Displaying tab content:", tabContent);
+  if (tabContent instanceof Node) {
+    content.appendChild(tabContent);
+  } else {
+    console.error("tabContent is not a Node:", tabContent);
+  }
 }
 
-// Xử lý sự kiện nút Cộng
-function handleAdd() {
-  const num1 = parseFloat(document.getElementById("num1").value) || 0;
-  const num2 = parseFloat(document.getElementById("num2").value) || 0;
-  const result = add(num1, num2);
+displayTab(home);
 
-  document.getElementById(
-    "result"
-  ).textContent = `${num1} + ${num2} = ${result}`;
-}
+// Cập nhật sự kiện cho 5 tab
+const homeTab = document.querySelector(".home-tab");
+const aboutTab = document.querySelector(".about-tab");
+const menuTab = document.querySelector(".menu-tab");
+const reservationsTab = document.querySelector(".reservations-tab");
+const contactTab = document.querySelector(".contact-tab");
 
-// Xử lý sự kiện nút Trừ
-function handleSubtract() {
-  const num1 = parseFloat(document.getElementById("num1").value) || 0;
-  const num2 = parseFloat(document.getElementById("num2").value) || 0;
-  const result = subtract(num1, num2);
+homeTab.addEventListener("click", () => displayTab(home));
+aboutTab.addEventListener("click", () => displayTab(about));
+menuTab.addEventListener("click", () => displayTab(menutab));
+reservationsTab.addEventListener("click", () => displayTab(reservations));
+contactTab.addEventListener("click", () => displayTab(contact));
+document.addEventListener("DOMContentLoaded", () => {
+  const animateElements = document.querySelectorAll(".animate-on-scroll");
 
-  document.getElementById(
-    "result"
-  ).textContent = `${num1} - ${num2} = ${result}`;
-}
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+        }
+      });
+    },
+    { threshold: 0.1 }
+  );
 
-// Khởi tạo ứng dụng khi DOM đã sẵn sàng
-document.addEventListener("DOMContentLoaded", initApp);
+  animateElements.forEach((el) => observer.observe(el));
+});
