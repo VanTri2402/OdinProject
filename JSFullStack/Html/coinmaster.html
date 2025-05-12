@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coin Master Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        
+        .game-container {
+            width: 800px;
+            position: relative;
+        }
+        
+        canvas {
+            background-color: #000;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+        
+        .game-title {
+            font-size: 24px;
+            margin: 20px 0;
+            color: gold;
+            text-shadow: 0 0 5px rgba(255, 215, 0, 0.7);
+        }
+        
+        .game-controls {
+            margin-top: 15px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .control-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .control-button:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .control-button:active {
+            transform: scale(0.95);
+        }
+        
+        .loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .loading-text {
+            font-size: 24px;
+            color: gold;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.5; }
+            50% { opacity: 1; }
+            100% { opacity: 0.5; }
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-title">COIN MASTER</div>
+    
+    <div class="game-container">
+        <div id="loading" class="loading">
+            <div class="loading-text">Đang tải game...</div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+    </div>
+    
+    <div class="game-controls">
+        <button id="resetBtn" class="control-button">Chơi lại</button>
+        <button id="fullscreenBtn" class="control-button">Toàn màn hình</button>
+        <button id="muteBtn" class="control-button">Tắt âm</button>
+    </div>
+    
+    <script>
+    // Coin Master Game - Phiên bản đơn giản
+    // Sử dụng HTML5 Canvas và JavaScript để tạo trò chơi mượt mà
+
+    const GAME = {
+        canvas: null,
+        ctx: null,
+        width: 800,
+        height: 600,
+        resources: {},
+        player: {
+            coins: 1000,
+            gems: 10,
+            level: 1,
+            village: {},
+            shields: 2,
+        },
+        slots: {
+            items: ['coin', 'hammer', 'shield', 'pig', 'attack'],
+            spinning: false,
+            results: [],
+            spinTime: 0,
+            spinTimeTotal: 80,
+        },
+        buildings: [
+            { id: 'house', name: 'Nhà', baseCost: 100, level: 0, maxLevel: 5, rewards: [10, 20, 30, 50, 100] },
+            { id: 'farm', name: 'Nông trại', baseCost: 200, level: 0, maxLevel: 5, rewards: [20, 40, 60, 100, 200] },
+            { id: 'mine', name: 'Mỏ', baseCost: 300, level: 0, maxLevel: 5, rewards: [30, 60, 90, 150, 300] },
+            { id: 'castle', name: 'Lâu đài', baseCost: 1000, level: 0, maxLevel: 3, rewards: [100, 200, 500] },
+        ],
+        animations: [],
+        enemies: [
+            { name: 'Người chơi 1', coins: 500, village: {} },
+            { name: 'Người chơi 2', coins: 800, village: {} },
+            { name: 'Người chơi 3', coins: 1200, village: {} },
+        ],
+        currentScreen: 'main', // main, village, attack, settings
+        spinCounter: 5,
+        lastUpdateTime: 0,
+        isMuted: false,
+        soundEffects: {},
+    };
+
+    // Khởi tạo game
+    function initGame() {
+        GAME.canvas = document.getElementById('gameCanvas');
+        GAME.ctx = GAME.canvas.getContext('2d');
+        GAME.canvas.width = GAME.width;
+        GAME.canvas.height = GAME.height;
+        
+        // Tải hình ảnh
+        loadResources();
+        
+        // Khởi tạo làng cho người chơi và kẻ địch
+        initVillages();
+        
+        // Khởi tạo âm thanh giả lập
+        initSounds();
+        
+        // Thiết lập các sự kiện chuột
+        setupEventListeners();
+        
+        // Ẩn màn hình loading
+        setTimeout(() => {
+            document.getElementById('loading').classList.add('hidden');
+        }, 1500);
+        
+        // Bắt đầu game loop
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Tải các tài nguyên hình ảnh
+    function loadResources() {
+        const imagesToLoad = [
+            'background', 'slot-machine', 'coin', 'hammer', 'shield', 
+            'pig', 'attack', 'house', 'farm', 'mine', 'castle', 'button'
+        ];
+        
+        // Giả lập tải hình ảnh (trong thực tế sẽ tải từ server)
+        for (const img of imagesToLoad) {
+            const image = new Image();
+            image.src = `placeholder/${img}.png`; // Thực tế thay bằng đường dẫn thật
+            GAME.resources[img] = image;
+            
+            // Tạo hình ảnh placeholder cho demo
+            GAME.resources[img] = createPlaceholderImage(img);
+        }
+    }
+
+    // Khởi tạo âm thanh giả lập
+    function initSounds() {
+        const soundsToLoad = ['spin', 'win', 'upgrade', 'attack', 'coin'];
+        
+        // Trong thực tế sẽ tải file âm thanh thật
+        for (const sound of soundsToLoad) {
+            GAME.soundEffects[sound] = {
+                play: function() {
+                    if (!GAME.isMuted) {
+                        console.log(`Playing sound: ${sound}`);
+                    }
+                }
+            };
+        }
+    }
+
+    // Phát âm thanh
+    function playSound(name) {
+        if (GAME.soundEffects[name]) {
+            GAME.soundEffects[name].play();
+        }
+    }
+
+    // Tạo hình ảnh placeholder để demo
+    function createPlaceholderImage(name) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 64;
+        canvas.height = 64;
+        const ctx = canvas.getContext('2d');
+        
+        // Tạo màu dựa trên tên
+        const colors = {
+            'background': '#87CEEB',
+            'slot-machine': '#8B4513',
+            'coin': '#FFD700',
+            'hammer': '#A9A9A9',
+            'shield': '#4169E1',
+            'pig': '#FFC0CB',
+            'attack': '#FF4500',
+            'house': '#8B4513',
+            'farm': '#228B22',
+            'mine': '#708090',
+            'castle': '#4B0082',
+            'button': '#4CAF50'
+        };
+        
+        ctx.fillStyle = colors[name] || '#666666';
+        ctx.fillRect(0, 0, 64, 64);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(name, 32, 36);
+        
+        return canvas;
+    }
+
+    // Khởi tạo làng cho người chơi và kẻ địch
+    function initVillages() {
+        // Khởi tạo làng cho người chơi
+        for (const building of GAME.buildings) {
+            GAME.player.village[building.id] = { ...building };
+        }
+        
+        // Khởi tạo làng cho kẻ địch
+        for (const enemy of GAME.enemies) {
+            enemy.village = {};
+            for (const building of GAME.buildings) {
+                const level = Math.floor(Math.random() * (building.maxLevel + 1));
+                enemy.village[building.id] = { ...building, level };
+            }
+        }
+    }
+
+    // Thiết lập các sự kiện chuột và phím
+    function setupEventListeners() {
+        GAME.canvas.addEventListener('click', handleClick);
+        document.addEventListener('keydown', handleKeyPress);
+        
+        // Thêm sự kiện cho các nút điều khiển
+        document.getElementById('resetBtn').addEventListener('click', resetGame);
+        document.getElementById('fullscreenBtn').addEventListener('click', toggleFullscreen);
+        document.getElementById('muteBtn').addEventListener('click', toggleMute);
+    }
+    
+    // Reset game
+    function resetGame() {
+        GAME.player.coins = 1000;
+        GAME.player.gems = 10;
+        GAME.player.level = 1;
+        GAME.player.shields = 2;
+        GAME.spinCounter = 5;
+        GAME.slots.results = [];
+        GAME.slots.spinning = false;
+        GAME.currentScreen = 'main';
+        
+        // Khởi tạo lại làng
+        initVillages();
+        
+        // Hiệu ứng thông báo
+        addAnimation(`Game đã được reset!`, 400, 300, '#00FF00');
+        
+        // Hiệu ứng âm thanh
+        playSound('coin');
+    }
+    
+    // Chuyển đổi chế độ toàn màn hình
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            const gameContainer = document.querySelector('.game-container');
+            if (gameContainer.requestFullscreen) {
+                gameContainer.requestFullscreen();
+            }
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+    
+    // Bật/tắt âm thanh
+    function toggleMute() {
+        GAME.isMuted = !GAME.isMuted;
+        const muteBtn = document.getElementById('muteBtn');
+        muteBtn.textContent = GAME.isMuted ? 'Bật âm' : 'Tắt âm';
+        
+        addAnimation(GAME.isMuted ? 'Đã tắt âm thanh' : 'Đã bật âm thanh', 400, 300, '#FFFFFF');
+    }
+
+    // Xử lý sự kiện click chuột
+    function handleClick(event) {
+        const rect = GAME.canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        
+        // Xử lý click tùy theo màn hình hiện tại
+        switch (GAME.currentScreen) {
+            case 'main':
+                handleMainScreenClick(x, y);
+                break;
+            case 'village':
+                handleVillageScreenClick(x, y);
+                break;
+            case 'attack':
+                handleAttackScreenClick(x, y);
+                break;
+            case 'settings':
+                handleSettingsScreenClick(x, y);
+                break;
+        }
+    }
+
+    // Xử lý sự kiện nhấn phím
+    function handleKeyPress(event) {
+        if (event.key === 'Escape') {
+            GAME.currentScreen = 'main';
+        }
+    }
+
+    // Xử lý click ở màn hình chính
+    function handleMainScreenClick(x, y) {
+        // Kiểm tra click vào nút quay
+        if (x > 350 && x < 450 && y > 400 && y < 450) {
+            if (GAME.spinCounter > 0 && !GAME.slots.spinning) {
+                spinSlots();
+            }
+        }
+        
+        // Kiểm tra click vào nút làng
+        if (x > 650 && x < 750 && y > 50 && y < 100) {
+            GAME.currentScreen = 'village';
+        }
+        
+        // Kiểm tra click vào nút tấn công
+        if (x > 650 && x < 750 && y > 120 && y < 170) {
+            GAME.currentScreen = 'attack';
+        }
+        
+        // Kiểm tra click vào nút cài đặt
+        if (x > 650 && x < 750 && y > 190 && y < 240) {
+            GAME.currentScreen = 'settings';
+        }
+    }
+
+    // Xử lý click ở màn hình làng
+    function handleVillageScreenClick(x, y) {
+        // Click vào nút quay lại
+        if (x > 50 && x < 150 && y > 50 && y < 100) {
+            GAME.currentScreen = 'main';
+            return;
+        }
+        
+        // Click vào các tòa nhà để nâng cấp
+        const buildingY = 200;
+        let buildingX = 150;
+        const spacing = 150;
+        
+        for (let i = 0; i < GAME.buildings.length; i++) {
+            const building = GAME.buildings[i];
+            const playerBuilding = GAME.player.village[building.id];
+            
+            if (x > buildingX - 50 && x < buildingX + 50 && 
+                y > buildingY - 50 && y < buildingY + 50) {
+                upgradeBuilding(building.id);
+                break;
+            }
+            
+            buildingX += spacing;
+        }
+    }
+
+    // Xử lý click ở màn hình tấn công
+    function handleAttackScreenClick(x, y) {
+        // Click vào nút quay lại
+        if (x > 50 && x < 150 && y > 50 && y < 100) {
+            GAME.currentScreen = 'main';
+            return;
+        }
+        
+        // Click vào các kẻ địch để tấn công
+        const enemyY = 200;
+        let enemyX = 200;
+        const spacing = 200;
+        
+        for (let i = 0; i < GAME.enemies.length; i++) {
+            if (x > enemyX - 70 && x < enemyX + 70 && 
+                y > enemyY - 70 && y < enemyY + 70) {
+                attackEnemy(i);
+                break;
+            }
+            
+            enemyX += spacing;
+        }
+    }
+
+    // Xử lý click ở màn hình cài đặt
+    function handleSettingsScreenClick(x, y) {
+        // Click vào nút quay lại
+        if (x > 50 && x < 150 && y > 50 && y < 100) {
+            GAME.currentScreen = 'main';
+        }
+        
+        // Click vào các nút bật/tắt
+        if (x > 450 && x < 510 && y > 140 - 15 && y < 140 + 15) {
+            toggleMute();
+        }
+    }
+
+    // Hàm nâng cấp tòa nhà
+    function upgradeBuilding(buildingId) {
+        const building = GAME.player.village[buildingId];
+        
+        if (building.level >= building.maxLevel) {
+            addAnimation(`Đã đạt cấp tối đa!`, 400, 300, '#FF0000');
+            return;
+        }
+        
+        const cost = building.baseCost * Math.pow(2, building.level);
+        
+        if (GAME.player.coins >= cost) {
+            GAME.player.coins -= cost;
+            building.level++;
+            addAnimation(`Nâng cấp thành công!`, 400, 300, '#00FF00');
+            
+            // Nếu nâng cấp đủ tòa nhà, tăng level người chơi
+            checkPlayerLevelUp();
+            
+            // Phát âm thanh
+            playSound('upgrade');
+        } else {
+            addAnimation(`Không đủ xu!`, 400, 300, '#FF0000');
+        }
+    }
+    
+    // Kiểm tra và tăng level người chơi
+    function checkPlayerLevelUp() {
+        let totalLevels = 0;
+        for (const buildingId in GAME.player.village) {
+            totalLevels += GAME.player.village[buildingId].level;
+        }
+        
+        const newLevel = Math.floor(totalLevels / 4) + 1;
+        if (newLevel > GAME.player.level) {
+            GAME.player.level = newLevel;
+            addAnimation(`Chúc mừng! Lên cấp ${newLevel}`, 400, 350, '#FFFF00');
+            GAME.player.gems += newLevel;
+            addAnimation(`+${newLevel} ngọc`, 400, 380, '#00FFFF');
+        }
+    }
+
+    // Hàm tấn công kẻ địch
+    function attackEnemy(enemyIndex) {
+        const enemy = GAME.enemies[enemyIndex];
+        
+        if (GAME.player.coins < 100) {
+            addAnimation(`Cần ít nhất 100 xu để tấn công!`, 400, 300, '#FF0000');
+            return;
+        }
+        
+        // Chi phí tấn công
+        GAME.player.coins -= 100;
+        
+        // Xác suất thành công dựa trên level của người chơi
+        const successRate = 0.5 + (GAME.player.level * 0.05);
+        
+        // Phát âm thanh
+        playSound('attack');
+        
+        if (Math.random() < successRate) {
+            // Tấn công thành công, lấy 20% số xu của kẻ địch
+            const stolenCoins = Math.floor(enemy.coins * 0.2);
+            GAME.player.coins += stolenCoins;
+            enemy.coins -= stolenCoins;
+            
+            addAnimation(`Tấn công thành công! +${stolenCoins} xu`, 400, 300, '#00FF00');
+            // Phát âm thanh
+            playSound('win');
+        } else {
+            addAnimation(`Tấn công thất bại!`, 400, 300, '#FF0000');
+        }
+    }
+
+    // Hàm quay Slots
+    function spinSlots() {
+        if (GAME.slots.spinning) return;
+        
+        GAME.slots.spinning = true;
+        GAME.slots.spinTime = 0;
+        GAME.slots.results = [];
+        GAME.spinCounter--;
+        
+        // Đặt kết quả ngẫu nhiên cho 3 ô slots
+        for (let i = 0; i < 3; i++) {
+            const randomIndex = Math.floor(Math.random() * GAME.slots.items.length);
+            GAME.slots.results.push(GAME.slots.items[randomIndex]);
+        }
+        
+        // Phát âm thanh
+        playSound('spin');
+    }
+
+    // Hàm thêm hiệu ứng animation text
+    function addAnimation(text, x, y, color = '#FFFFFF') {
+        GAME.animations.push({
+            text,
+            x,
+            y,
+            color,
+            alpha: 1,
+            lifeTime: 0,
+            maxLifeTime: 60, // ~1 giây với 60fps
+        });
+    }
+
+    // Game loop chính
+    function gameLoop(currentTime) {
+        // Tính delta time giữa các frame
+        if (!GAME.lastUpdateTime) GAME.lastUpdateTime = currentTime;
+        const deltaTime = currentTime - GAME.lastUpdateTime;
+        GAME.lastUpdateTime = currentTime;
+        
+        // Cập nhật trạng thái game
+        update(deltaTime);
+        
+        // Vẽ game
+        render();
+        
+        // Tiếp tục loop
+        requestAnimationFrame(gameLoop);
+    }
+
+    // Cập nhật trạng thái game
+    function update(deltaTime) {
+        // Cập nhật slots nếu đang quay
+        if (GAME.slots.spinning) {
+            GAME.slots.spinTime++;
+            
+            if (GAME.slots.spinTime >= GAME.slots.spinTimeTotal) {
+                GAME.slots.spinning = false;
+                processSlotResults();
+            }
+        }
+        
+        // Nạp thêm lượt quay theo thời gian
+        if (GAME.spinCounter < 5 && Math.random() < 0.001) {
+            GAME.spinCounter++;
+            addAnimation(`+1 lượt quay!`, 400, 100, '#FFFF00');
+        }
+        
+        // Cập nhật các animation
+        for (let i = GAME.animations.length - 1; i >= 0; i--) {
+            const anim = GAME.animations[i];
+            anim.lifeTime++;
+            anim.alpha = 1 - (anim.lifeTime / anim.maxLifeTime);
+            anim.y -= 0.5; // Bay lên trên
+            
+            if (anim.lifeTime >= anim.maxLifeTime) {
+                GAME.animations.splice(i, 1);
+            }
+        }
+    }
+
+    // Xử lý kết quả quay slot
+    function processSlotResults() {
+        // Đếm số lượng từng loại item
+        const counts = {};
+        for (const item of GAME.slots.results) {
+            counts[item] = (counts[item] || 0) + 1;
+        }
+        
+        // Xử lý kết quả
+        if (counts['coin'] === 3) {
+            // Ba đồng xu = thưởng lớn
+            const reward = 500 + (GAME.player.level * 100);
+            GAME.player.coins += reward;
+            addAnimation(`Jackpot! +${reward} xu`, 400, 300, '#FFFF00');
+            playSound('win');
+        } else if (counts['coin'] === 2) {
+            // Hai đồng xu = thưởng nhỏ
+            const reward = 200 + (GAME.player.level * 50);
+            GAME.player.coins += reward;
+            addAnimation(`+${reward} xu`, 400, 300, '#FFFF00');
+            playSound('coin');
+        } else if (counts['coin'] === 1) {
+            // Một đồng xu = thưởng rất nhỏ
+            const reward = 50 + (GAME.player.level * 10);
+            GAME.player.coins += reward;
+            addAnimation(`+${reward} xu`, 400, 300, '#FFFF00');
+            playSound('coin');
+        }
+        
+        if (counts['hammer'] >= 1) {
+            // Búa = xu để xây dựng
+            const reward = counts['hammer'] * 100;
+            GAME.player.coins += reward;
+            addAnimation(`Búa: +${reward} xu xây dựng`, 400, 330, '#A9A9A9');
+        }
+        
+        if (counts['shield'] >= 1) {
+            // Khiên = bảo vệ khỏi tấn công
+            GAME.player.shields += counts['shield'];
+            addAnimation(`+${counts['shield']} khiên`, 400, 360, '#4169E1');
+        }
+        
+        if (counts['pig'] >= 1) {
+            // Heo = thêm lượt quay
+            GAME.spinCounter += counts['pig'];
+            addAnimation(`+${counts['pig']} lượt quay`, 400, 390, '#FFC0CB');
+        }
+        
+        if (counts['attack'] >= 1) {
+            // Tấn công = cơ hội tấn công làng khác
+            addAnimation(`Cơ hội tấn công!`, 400, 420, '#FF4500');
+            setTimeout(() => { GAME.currentScreen = 'attack'; }, 1000);
+        }
+    }
+
+    // Render game
+    function render() {
+        const ctx = GAME.ctx;
+        
+        // Xóa canvas
+        ctx.clearRect(0, 0, GAME.width, GAME.height);
+        
+        // Vẽ màn hình tương ứng
+        switch (GAME.currentScreen) {
+            case 'main':
+                renderMainScreen();
+                break;
+            case 'village':
+                renderVillageScreen();
+                break;
+            case 'attack':
+                renderAttackScreen();
+                break;
+            case 'settings':
+                renderSettingsScreen();
+                break;
+        }
+        
+        // Vẽ thông tin người chơi
+        renderPlayerInfo();
+        
+        // Vẽ các animation
+        renderAnimations();
+    }
+
+    // Render màn hình chính với slot machine
+    function renderMainScreen() {
+        const ctx = GAME.ctx;
+        
+        // Vẽ background
+        ctx.drawImage(GAME.resources.background, 0, 0, GAME.width, GAME.height);
+        
+        // Vẽ tiêu đề
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '30px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('COIN MASTER', GAME.width / 2, 80);
+        
+        // Vẽ máy slot
+        ctx.drawImage(GAME.resources['slot-machine'], 250, 150, 300, 200);
+        
+        // Vẽ các ô slot
+        for (let i = 0; i < 3; i++) {
+            ctx.fillStyle = '#FFFFFF';
+            ctx.fillRect(290 + i * 70, 200, 60, 60);
+            
+            // Nếu đang quay, hiển thị hình ảnh ngẫu nhiên
+            if (GAME.slots.spinning) {
+                const randomItem = GAME.slots.items[Math.floor(Math.random() * GAME.slots.items.length)];
+                ctx.drawImage(GAME.resources[randomItem], 290 + i * 70, 200, 60, 60);
+            } 
+            // Nếu không quay và có kết quả, hiển thị kết quả
+            else if (GAME.slots.results[i]) {
+                ctx.drawImage(GAME.resources[GAME.slots.results[i]], 290 + i * 70, 200, 60, 60);
+            }
+        }
+        
+        // Vẽ nút quay
+        ctx.fillStyle = GAME.spinCounter > 0 ? '#4CAF50' : '#CCCCCC';
+        ctx.fillRect(350, 400, 100, 50);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '20px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('QUAY', 400, 430);
+        ctx.fillText(`${GAME.spinCounter}/5`, 400, 380);
+        
+        // Vẽ các nút chức năng
+        renderButton(650, 50, 'Làng');
+        renderButton(650, 120, 'Tấn công');
+        renderButton(650, 190, 'Cài đặt');
+    }
+
+    // Render màn hình làng
+    function renderVillageScreen() {
+        const ctx = GAME.ctx;
+        
+        // Vẽ background
+        ctx.drawImage(GAME.resources.background, 0, 0, GAME.width, GAME.height);
+        
+        // Vẽ nút quay lại
+        renderButton(50, 50, 'Quay lại');
+        
+        // Vẽ tiêu đề
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '30px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Làng của bạn', GAME.width / 2, 80);
+        
+        // Vẽ các tòa nhà
+        const buildingY = 200;
+        let buildingX = 150;
+        const spacing = 150;
+        
+        for (let i = 0; i < GAME.buildings.length; i++) {
+            const building = GAME.buildings[i];
+            const playerBuilding = GAME.player.village[building.id];
+            
+            // Vẽ tòa nhà
+            ctx.drawImage(GAME.resources[building.id], buildingX - 30, buildingY - 30, 60, 60);
+            
+            // Vẽ thông tin tòa nhà
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(building.name, buildingX, buildingY + 

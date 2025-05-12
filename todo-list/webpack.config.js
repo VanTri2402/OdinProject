@@ -15,14 +15,14 @@ module.exports = {
     static: {
       directory: path.join(__dirname, "dist"),
     },
-    port: 5050,
+    port: 2402,
     open: true,
     hot: true,
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: "./src/template.html", // Sử dụng template trong src
-      filename: "index.html", // Tạo index.html trong dist
+      template: "./src/template.html", // Sửa tên template
+      filename: "index.html",
       inject: "body",
     }),
     new MiniCssExtractPlugin({
@@ -60,5 +60,21 @@ module.exports = {
         },
       },
     ],
+  },
+  resolve: {
+    fallback: {
+      async_hooks: false,
+      zlib: false,
+      querystring: false,
+      path: false,
+      crypto: false,
+      fs: false,
+      stream: false,
+      http: false,
+      net: false,
+      url: false,
+      buffer: false,
+      util: false,
+    },
   },
 };

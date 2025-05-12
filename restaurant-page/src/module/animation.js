@@ -1,55 +1,3 @@
-import "./styles.css";
-import { home } from "./module/home";
-import { about } from "./module/about"; // Thêm About
-import { menutab } from "./module/menu";
-import { reservations } from "./module/reservations"; // Thêm Reservations
-import { contact } from "./module/contact";
-import { header } from "./module/header";
-import { footer } from "./module/footer";
-
-console.log("Restaurant Page is running!");
-
-const headerElement = document.getElementById("header");
-const content = document.getElementById("content");
-const footerElement = document.getElementById("footer");
-
-// Thêm header và footer
-try {
-  headerElement.appendChild(header());
-  footerElement.appendChild(footer());
-} catch (error) {
-  console.error("Error appending header or footer:", error);
-}
-
-function clearContent() {
-  content.innerHTML = "";
-}
-
-function displayTab(tabFunction) {
-  clearContent();
-  const tabContent = tabFunction();
-  console.log("Displaying tab content:", tabContent);
-  if (tabContent instanceof Node) {
-    content.appendChild(tabContent);
-  } else {
-    console.error("tabContent is not a Node:", tabContent);
-  }
-}
-
-displayTab(home);
-
-// Cập nhật sự kiện cho 5 tab
-const homeTab = document.querySelector(".home-tab");
-const aboutTab = document.querySelector(".about-tab");
-const menuTab = document.querySelector(".menu-tab");
-const reservationsTab = document.querySelector(".reservations-tab");
-const contactTab = document.querySelector(".contact-tab");
-
-homeTab.addEventListener("click", () => displayTab(home));
-aboutTab.addEventListener("click", () => displayTab(about));
-menuTab.addEventListener("click", () => displayTab(menutab));
-reservationsTab.addEventListener("click", () => displayTab(reservations));
-contactTab.addEventListener("click", () => displayTab(contact));
 document.addEventListener("DOMContentLoaded", () => {
   // === Preloader ===
   const preloader = document.querySelector(".preloader");
@@ -89,30 +37,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // === Active Navigation Link ===
   const navLinks = document.querySelectorAll(".nav-btn");
-  const sections = document.querySelectorAll("section[id]"); // Select sections with id attributes
+  const sections = document.querySelectorAll("section");
 
   const setActiveLink = () => {
-    if (!sections.length || !navLinks.length) return; // Exit if no sections or links
+    let index = sections.length;
 
-    let index = sections.length - 1;
+    while (--index && window.scrollY + 100 < sections[index].offsetTop) {}
 
-    // Find the current section based on scroll position
-    for (let i = 0; i < sections.length; i++) {
-      const section = sections[i];
-      if (section.offsetTop <= window.scrollY + 100) {
-        index = i;
-        break;
-      }
-    }
-
-    // Remove active class from all links
     navLinks.forEach((link) => link.classList.remove("active"));
-
-    // Add active class to the corresponding link
-    const currentLink = navLinks[index];
-    if (currentLink) {
-      currentLink.classList.add("active");
-    }
+    navLinks[index]?.classList.add("active");
   };
 
   window.addEventListener("scroll", setActiveLink);
