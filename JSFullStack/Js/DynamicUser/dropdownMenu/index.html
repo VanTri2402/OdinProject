@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dropdown Menu Tùy chỉnh</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+        font-family: Georgia, "Times New Roman", Times, serif;
+      }
+
+      body {
+        padding: 50px;
+      }
+
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow:
+          0 10px 20px rgba(0, 0, 0, 0.19),
+          0 6px 6px rgba(0, 0, 0, 0.23);
+      }
+
+      button {
+        background-color: blanchedalmond;
+        outline: none;
+        border: none;
+        border-radius: 20px;
+      }
+
+      .dropdown-title {
+        height: auto;
+        width: auto;
+        padding: 30px;
+        position: relative;
+      }
+
+      .dropdown-title i {
+        margin-left: 20px;
+        font-size: 15px;
+      }
+
+      .dropdown {
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        border-radius: 4px;
+        overflow: hidden;
+        top: 100%;
+        left: 0;
+      }
+
+      .dropdown a {
+        color: black;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        transition: background-color 0.3s;
+      }
+
+      .dropdown a:hover {
+        background-color: #f1f1f1;
+      }
+
+      .dropdown-title:hover {
+        opacity: 0.6;
+        border: 2px solid rgb(147, 113, 113);
+        cursor: pointer;
+        transition: 0.4s all ease-out;
+      }
+
+      .dropdown-title:hover .dropdown {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Dropdown Menu Tùy chỉnh</h1>
+    <div class="container">
+      <button class="dropdown-title">
+        Menu Dropdown <i class="fas fa-chevron-down"></i>
+        <div class="dropdown">
+          <a href="#">Tùy chọn 1</a>
+          <a href="#">Tùy chọn 2</a>
+          <a href="#">Tùy chọn 3</a>
+          <a href="#">Tùy chọn 4</a>
+        </div>
+      </button>
+    </div>
+
+    <!-- Menu thứ hai để minh họa nhiều dropdown -->
+    <div class="container" style="margin-top: 100px">
+      <button class="dropdown-title">
+        Danh mục sản phẩm <i class="fas fa-chevron-down"></i>
+        <div class="dropdown">
+          <a href="#">Điện thoại</a>
+          <a href="#">Máy tính</a>
+          <a href="#">Phụ kiện</a>
+          <a href="#">Phần mềm</a>
+        </div>
+      </button>
+    </div>
+  </body>
+</html>
