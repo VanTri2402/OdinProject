@@ -85,6 +85,14 @@ class HashMap {
     }
     return result;
   }
+  entries(key) {
+    let result = [];
+    let bucketSlot = bucket[hash(key)];
+    for (let [k, v] of bucketSlot) {
+      result.push(`${bucketSlot[k].toString()} : ${bucketSlot[v]} `);
+    }
+    return result;
+  }
 }
 const map = new HashMap();
 map.set("hello", "world");
