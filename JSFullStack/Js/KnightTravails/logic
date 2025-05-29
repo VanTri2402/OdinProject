@@ -1,41 +1,41 @@
-start & end = 1 arr[x,y]
-this.path la duong di;
-muc tieu tim tong so buoc it nhat tu start toi end 
-[x,y] === [x,y];
-[0,1] === [0,1];
-const moves = [
-      [2, 1],
-      [2, -1],
-      [-2, 1],
-      [-2, -1],
-      [1, 2],
-      [1, -2],
-      [-1, 2],
-      [-1, -2],
-];
-validMove = []
-ghi lai so buoc di chuyen hop le 
-let nx , ny = 0 ;
-for(let [a,b] of moves){
-const  nx = nx+ a 
-    const  ny = ny +b 
-    if(0 <= nx && nx <=7, 0 <= ny && ny<=7){
-        validMove.push([nx , ny])
-    }
-}
-BFS 
-queue arr chua cac o hop le gia tri ban dau start
-visted luu cac vi tri da di qua 
-parent luu node truoc va node hien tai 
-neu queue co hang doi loop va lay phan tu cap arr dau tien cua queue
-doi thanh str 
-thdb neu cur[0] === end[0] &&cur[1] === end[1] => tra ve parrent tuc la diem bat dau cung la diem ket thuc
-lay cac buoc tiep theo nextMoves = this.getValidMove(current)
-loop move of nextMoves 
-doi thanh str move
-if cac buoc tiep theo chua tung di qua 
-=> queue.push(move);
-visted.set(movekey , true)
-parent.set(movekey , current);
-tracePath
-Truy ngược từ end về start bằng cách sử dụng parent map, rồi xây dựng lại đường đi theo đúng thứ tự.
+// start & end = 1 arr[x,y]
+// this.path la duong di;
+// muc tieu tim tong so buoc it nhat tu start toi end 
+// [x,y] === [x,y];
+// [0,1] === [0,1];
+// const moves = [
+//       [2, 1],
+//       [2, -1],
+//       [-2, 1],
+//       [-2, -1],
+//       [1, 2],
+//       [1, -2],
+//       [-1, 2],
+//       [-1, -2],
+// ];
+// validMove = []
+// ghi lai so buoc di chuyen hop le 
+// let nx , ny = 0 ;
+// for(let [a,b] of moves){
+// const  nx = nx+ a 
+//     const  ny = ny +b 
+//     if(0 <= nx && nx <=7, 0 <= ny && ny<=7){
+//         validMove.push([nx , ny])
+//     }
+// }
+// BFS 
+// queue arr chua cac o hop le gia tri ban dau start
+// visted luu cac vi tri da di qua 
+// parent luu node truoc va node hien tai 
+// neu queue co hang doi loop va lay phan tu cap arr dau tien cua queue
+// doi thanh str 
+// thdb neu cur[0] === end[0] &&cur[1] === end[1] => tra ve parrent tuc la diem bat dau cung la diem ket thuc
+// lay cac buoc tiep theo nextMoves = this.getValidMove(current)
+// loop move of nextMoves 
+// doi thanh str move
+// if cac buoc tiep theo chua tung di qua 
+// => queue.push(move);
+// visted.set(movekey , true)
+// parent.set(movekey , current);
+// tracePath
+// Truy ngược từ end về start bằng cách sử dụng parent map, rồi xây dựng lại đường đi theo đúng thứ tự.
